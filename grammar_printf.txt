@@ -1,0 +1,525 @@
+statement:
+    labeled-statement
+    |compound-statement
+    |expression-statement
+    |selection-statement
+    |iteration-statement
+    |jump-statement
+;
+
+labeled-statement:
+    CASE constant-expression COLON statement
+    |DEFAULT COLON statement
+;
+
+constant-expression:
+    ID 
+    |INT 
+    |FLOAT
+;
+
+compound-statement:
+    OPEN_CURLY CLOSED_CURLY
+    |OPEN_CURLY declaration-list CLOSED_CURLY
+    |OPEN_CURLY statement-list CLOSED_CURLY
+    |OPEN_CURLY declaration-list statement-list CLOSED_CURLY
+;
+
+declaration-list:
+    declaration
+    |declaration-list declaration
+;
+
+assignment-operator:
+    EQUAL_TO
+;
+
+declaration:
+    PROCESSOR ID assignment-operator Construct_Processor
+    |MEMORY ID assignment-operator Construct_Memory
+    |LINK ID assignment-operator Construct_Link
+    |JOB ID assignment-operator Construct_Job
+    |CLUSTER ID assignment-operator Construct_Cluster
+    |GLOBAL_SCHEDULER ID assignment-operator Construct_Global_Scheduler
+    |LOCAL_SCHEDULER ID assignment-operator Construct_Local_Scheduler 
+    |INT_TYPE ID assignment-operator assignment-expression
+    |FLOAT_TYPE ID assignment-operator assignment-expression 
+    |STRING_TYPE ID assignment-operator ID_STRING
+    |INT_TYPE ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY argument-expression-list CLOSED_CURLY
+    |FLOAT_TYPE ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY argument-expression-list CLOSED_CURLY
+    |PROCESSOR ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY CONSTRUCTOR_LIST CLOSED_CURLY
+    |LOCAL_SCHEDULER ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY CONSTRUCTOR_LIST CLOSED_CURLY
+    |CLUSTER ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY CONSTRUCTOR_LIST CLOSED_CURLY
+    |JOB ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY CONSTRUCTOR_LIST CLOSED_CURLY
+    |MEMORY ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY CONSTRUCTOR_LIST CLOSED_CURLY
+    |LINK ID OPEN_SQUARE  CLOSED_SQUARE  assignment-operator OPEN_CURLY CONSTRUCTOR_LIST CLOSED_CURLY
+    |INT_TYPE ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |FLOAT_TYPE ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |PROCESSOR ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |CLUSTER ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |JOB ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |MEMORY ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |LINK ID OPEN_SQUARE INT CLOSED_SQUARE 
+    |LOCAL_SCHEDULER ID OPEN_SQUARE INT CLOSED_SQUARE 
+;
+
+statement-list:
+    statement
+    |statement-list statement
+;
+
+expression-statement:
+    SEMI
+    |expression SEMI
+;
+
+expression:
+    assignment-expression
+    |expression COMMA assignment-expression  
+; 
+
+selection-statement:
+    IF OPEN_BRACKET expression CLOSED_BRACKET statement
+    |IF OPEN_BRACKET expression CLOSED_BRACKET statement ELSE statement
+    |SWITCH OPEN_BRACKET expression CLOSED_BRACKET statement
+;
+
+iteration-statement:
+    WHILE OPEN_BRACKET expression CLOSED_BRACKET statement
+    |DO statement WHILE OPEN_BRACKET expression CLOSED_BRACKET SEMI
+    |FOR OPEN_BRACKET            SEMI            SEMI            CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET            SEMI            SEMI expression CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET            SEMI expression SEMI            CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET            SEMI expression SEMI expression CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET expression SEMI            SEMI            CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET expression SEMI            SEMI expression CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET expression SEMI expression SEMI            CLOSED_BRACKET statement
+    |FOR OPEN_BRACKET expression SEMI expression SEMI expression CLOSED_BRACKET statement
+;
+
+jump-statement:
+    CONTINUE SEMI
+    |BREAK SEMI
+    |RETURN SEMI
+    |RETURN expression SEMI
+;
+
+primary-expression:
+    ID
+    |INT
+    |FLOAT
+    |OPEN_BRACKET expression CLOSED_BRACKET
+;
+
+
+postfix-expression:
+    primary-expression
+    |postfix-expression  OPEN_SQUARE  expression  CLOSED_SQUARE 
+    |GLOBAL_SCHEDULER_MEMBER_FUNCTION_FREE
+    |PROCESSOR_MEMBER_FUNCTION_FREE 
+    |constructor
+    |postfix-expression DOT LOCAL_SCHEDULER_MEMBER_FUNCTION_DOT
+    |postfix-expression DOT PROCESSOR_MEMBER_FUNCTION_DOT 
+    |postfix-expression DOT MEMORY_MEMBER_FUNCTION_DOT 
+    |postfix-expression DOT JOB_MEMBER_FUNCTION_DOT 
+    |postfix-expression OPEN_BRACKET CLOSED_BRACKET 
+    |postfix-expression OPEN_BRACKET argument-expression-list CLOSED_BRACKET
+    |postfix-expression PLUS_PLUS {printf("postfix-expression PLUS_PLUS\n");}
+    |postfix-expression MINUS_MINUS
+;
+
+argument-expression-list:
+    assignment-expression
+    |argument-expression-list COMMA assignment-expression
+;
+
+unary-expression:
+    postfix-expression
+    |PLUS_PLUS unary-expression
+    |MINUS_MINUS unary-expression
+    |NOT unary-expression
+;
+
+multiplicative-expression:
+    unary-expression
+    |multiplicative-expression MULTIPLY unary-expression
+    |multiplicative-expression DIV unary-expression
+    |multiplicative-expression MOD unary-expression
+;
+
+additive-expression:
+    multiplicative-expression
+    |additive-expression ADD multiplicative-expression
+    |additive-expression SUB multiplicative-expression
+;
+
+relational-expression:
+    additive-expression
+    |relational-expression LESS_THAN additive-expression
+    |relational-expression GREATER_THAN additive-expression
+    |relational-expression LESS_THAN_EQUAL additive-expression
+    |relational-expression GREATER_THAN_EQUAL additive-expression
+;
+
+equality-expression:
+    relational-expression
+    |equality-expression assignment-operator relational-expression
+    |equality-expression NOT_EQUAL relational-expression
+;
+
+logical-AND-expression:
+    equality-expression
+    |logical-AND-expression AND equality-expression
+;
+
+logical-OR-expression:
+    logical-AND-expression
+    |logical-OR-expression OR logical-AND-expression
+;
+
+conditional-expression:
+    logical-OR-expression
+    |logical-OR-expression QUE_MARK expression COLON conditional-expression
+;
+
+assignment-expression:
+    conditional-expression
+    |unary-expression assignment-operator assignment-expression
+;
+
+constructor: 
+    Construct_Processor  
+    |Construct_Memory  
+    |Construct_Link  
+    |Construct_Job  
+    |Construct_Cluster
+    |Construct_Global_Scheduler
+    |Construct_Local_Scheduler
+;
+
+CONSTRUCTOR_LIST:
+    CONSTRUCTOR_LIST COMMA ID 
+    |ID
+    |constructor
+    |CONSTRUCTOR_LIST COMMA constructor
+;
+
+name:
+    %empty
+   |COMMA ID_STRING  
+   |COMMA NAME assignment-operator ID_STRING 
+;
+
+ID_STRING:  
+    ID  
+    |STRING_LITERAL
+;
+
+Construct_Global_Scheduler:
+    GLOBAL_SCHEDULER OPEN_BRACKET GLOBAL_SCHEDULER_PARAM_LIST CLOSED_BRACKET
+;
+
+GLOBAL_SCHEDULER_PARAM_LIST:
+    jobs policy    
+;
+
+jobs:
+    JOBS assignment-operator  OPEN_SQUARE CONSTRUCTOR_LIST CLOSED_SQUARE   
+    |OPEN_SQUARE CONSTRUCTOR_LIST CLOSED_SQUARE   
+    |JOBS assignment-operator CONSTRUCTOR_LIST  
+    |CONSTRUCTOR_LIST
+;
+
+policy:
+    %empty
+    |COMMA POLICY assignment-operator ID_STRING
+    |COMMA ID_STRING
+;
+
+Construct_Local_Scheduler:
+    LOCAL_SCHEDULER OPEN_BRACKET LOCAL_SCHEDULER_PARAM_LIST CLOSED_BRACKET
+;
+
+LOCAL_SCHEDULER_PARAM_LIST:
+    jobs COMMA PROCESSOR_ID SCHEDULE_POLICY priority
+;
+
+PROCESSOR_ID:
+    PID assignment-operator ID_STRING
+    |ID_STRING
+;
+
+SCHEDULE_POLICY:
+    %empty
+    |COMMA POLICY assignment-operator POLICY_VALUES
+    |COMMA POLICY_VALUES
+;
+
+POLICY_VALUES:
+    FIFO
+    |RR
+    |LIFO
+    |SJF
+    |ID
+;
+
+priority:
+    %empty
+    |COMMA PRIORITY assignment-operator OPEN_SQUARE argument-expression-list CLOSED_SQUARE 
+    |COMMA OPEN_SQUARE argument-expression-list CLOSED_SQUARE 
+;
+
+Construct_Processor:
+    PROCESSOR OPEN_BRACKET PROC_PARAM_LIST CLOSED_BRACKET 
+;
+
+PROC_PARAM_LIST:
+    isa COMMA clock_speed COMMA l1_memory l2_memory name
+;
+
+isa:
+    ISA assignment-operator ISA_VALUES  
+    |ISA_VALUES
+;
+
+ISA_VALUES:
+    ARM  
+    |AMD  
+    |CDC  
+    |MIPS  
+    |ID
+;
+
+clock_speed:
+    CLOCK_SPEED assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+l1_memory:  
+    L1_MEMORY assignment-operator CONSTRUCTOR_LIST  
+    |CONSTRUCTOR_LIST
+;
+
+l2_memory:   
+    %empty
+    |COMMA L2_MEMORY assignment-operator CONSTRUCTOR_LIST  
+    |COMMA CONSTRUCTOR_LIST  
+;
+
+Construct_Memory:
+    MEMORY OPEN_BRACKET MEM_PARAM_LIST CLOSED_BRACKET
+;
+
+MEM_PARAM_LIST: 
+    memory_type COMMA mem_size name
+;
+
+memory_type:   
+    MEMORY_TYPE assignment-operator MEM_TYPE_VALUES  
+    |MEM_TYPE_VALUES
+;
+
+MEM_TYPE_VALUES:
+    PRIMARY  
+    |SECONDARY  
+    |CACHE
+    |ID
+;
+
+mem_size:   
+    MEM_SIZE assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+Construct_Link:
+    LINK OPEN_BRACKET LINK_PARAM_LIST CLOSED_BRACKET
+;
+
+LINK_PARAM_LIST:
+    start_point COMMA end_point COMMA bandwidth COMMA channel_capacity name
+;
+
+start_point:   
+    START_POINT assignment-operator ID_STRING 
+    |ID_STRING
+;
+
+end_point:   
+    END_POINT assignment-operator ID_STRING 
+    |ID_STRING
+;
+
+bandwidth:   
+    BANDWIDTH assignment-operator assignment-expression  
+    |assignment-expression
+;    
+
+channel_capacity:   
+    CHANNEL_CAPACITY assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+Construct_Job: 
+    JOB OPEN_BRACKET JOB_PARAM_LIST CLOSED_BRACKET
+;
+
+JOB_PARAM_LIST:   
+    job_id COMMA flops_required COMMA deadline COMMA mem_required COMMA affinity
+;
+
+job_id:  
+    JOB_ID assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+flops_required:   
+    FLOPS_REQUIRED assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+deadline:   
+    DEADLINE assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+mem_required:   
+    MEM_REQUIRED assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+affinity:   
+    AFFINITY assignment-operator OPEN_SQUARE assignment-expression COMMA assignment-expression COMMA assignment-expression COMMA assignment-expression CLOSED_SQUARE  
+    |OPEN_SQUARE assignment-expression COMMA assignment-expression COMMA assignment-expression COMMA assignment-expression CLOSED_SQUARE    
+    |ID
+    |AFFINITY assignment-operator ID
+;
+
+Construct_Cluster:  
+    CLUSTER OPEN_BRACKET CLUSTER_PARAM_LIST CLOSED_BRACKET
+;
+
+CLUSTER_PARAM_LIST:   
+    processors COMMA topology COMMA link_bandwidth COMMA link_capacity name
+;
+
+processors:   
+    PROCESSORS assignment-operator  OPEN_SQUARE CONSTRUCTOR_LIST CLOSED_SQUARE   
+    |OPEN_SQUARE CONSTRUCTOR_LIST CLOSED_SQUARE   
+;
+
+topology: 
+    TOPOLOGY assignment-operator TOPOLOGY_VALUES  
+    |TOPOLOGY_VALUES
+;
+
+TOPOLOGY_VALUES:   
+    TREE  
+    |BUS  
+    |RING  
+    |STAR  
+    |MESH
+    |ID
+;
+
+link_bandwidth:   
+    LINK_BANDWIDTH assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+link_capacity:   
+    LINK_CAPACITY assignment-operator assignment-expression  
+    |assignment-expression
+;
+
+PROCESSOR_MEMBER_FUNCTION_DOT:   
+    is_running  
+    |submit_jobs  
+    |get_clock_speed
+;
+
+PROCESSOR_MEMBER_FUNCTION_FREE:   
+    run  
+    |discard_job
+;
+
+is_running:   
+    IS_RUNNING OPEN_BRACKET CLOSED_BRACKET
+;
+
+submit_jobs:   
+    SUBMIT_JOBS OPEN_BRACKET SUBMIT_JOB_PARAM CLOSED_BRACKET
+;
+
+SUBMIT_JOB_PARAM:   
+    assignment-expression  
+    | OPEN_SQUARE argument-expression-list CLOSED_SQUARE 
+;
+
+get_clock_speed:   
+    GET_CLOCK_SPEED OPEN_BRACKET CLOSED_BRACKET
+;
+
+run:   
+    RUN OPEN_BRACKET RUN_PARAM_LIST CLOSED_BRACKET
+;
+
+RUN_PARAM_LIST:   
+    CONSTRUCTOR_LIST 
+    |OPEN_SQUARE CONSTRUCTOR_LIST CLOSED_SQUARE 
+;
+
+discard_job:   
+    DISCARD_JOB OPEN_BRACKET ID CLOSED_BRACKET
+;
+
+MEMORY_MEMBER_FUNCTION_DOT:   
+    get_available_memory
+;
+
+get_available_memory:   
+    GET_AVAILABLE_MEMORY OPEN_BRACKET CLOSED_BRACKET
+;
+
+JOB_MEMBER_FUNCTION_DOT:   
+    get_memory
+;
+
+get_memory:   
+    GET_MEMORY OPEN_BRACKET CLOSED_BRACKET
+;
+
+GLOBAL_SCHEDULER_MEMBER_FUNCTION_FREE:
+    get_assigned_jobs
+    |get_processor
+;
+
+get_assigned_jobs:
+    GET_ASSIGNED_JOBS OPEN_BRACKET GET_ASSIGNED_JOBS_PARAM CLOSED_BRACKET
+;
+
+GET_ASSIGNED_JOBS_PARAM:
+    PID assignment-operator ID_STRING  
+    |ID_STRING
+;
+
+get_processor:
+    GET_PROCESSOR OPEN_BRACKET GET_PROCESSOR_PARAM CLOSED_BRACKET
+;
+
+GET_PROCESSOR_PARAM:
+    JOB_ID assignment-operator assignment-expression
+    |assignment-expression
+;
+
+LOCAL_SCHEDULER_MEMBER_FUNCTION_DOT:
+    get_exec_order
+    |get_unscheduled_jobs 
+;
+
+get_exec_order: 
+    GET_EXEC_ORDER OPEN_BRACKET CLOSED_BRACKET
+;
+
+get_unscheduled_jobs:
+    GET_UNSCHEDULED_JOBS OPEN_BRACKET CLOSED_BRACKET
+;
